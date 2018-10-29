@@ -66,12 +66,9 @@ $(document).ready(function () {
                 }
                 console.log(`assigning player1: ${JSON.stringify(player1)}`);
                 player1Ref.set(player1);
+                player1Ref.onDisconnect().remove();
                 turn = 2;
                 statusDisplay.text(`Waiting on player 2...`);
-                // player1NameDisplay.html(`${player1.name}`);
-                // player1WinDisplay.html(`${player1.wins}`);
-                // player1LossDisplay.html(`${player1.losses}`);
-                //add event listen to /player1/ to update player1 DOM
 
             } else if (activeConnections === 2) {
                 //assign player2
@@ -83,6 +80,7 @@ $(document).ready(function () {
                     currentChoice: ""
                 }
                 player2Ref.set(player2);
+                player2Ref.onDisconnect().remove();
             } else {
                 console.log(`not assigning a player`);
             }
