@@ -14,7 +14,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.6/firebase.js"></script>
-    
+
 
 </head>
 
@@ -24,10 +24,10 @@
             <h1>Rock Paper Scissors</h1>
         </header>
 
-        <div id="player-join" class="text-center mb-3">
+        <!-- <div id="player-join" class="text-center mb-3">
             <input id="player-name-input" type="text" placeholder="enter player name">
             <button id="submit-player-button" class="btn btn-outline-dark">submit</button>
-        </div>
+        </div> -->
 
         <div class="row">
             <div class="col-md-7 text-center border">
@@ -37,9 +37,9 @@
                     <p>Wins: <span id="player1-win-display"></span> Losses: <span id="player-1-loss-display"></span>
                         Ties: <span id="player-1-ties"></span></p>
                     <div class="d-flex justify-content-center">
-                        <img id="rock1" class="player-option" src="./assets/images/rock.jpg" alt="Rock">
-                        <img id="paper1" class="player-option" src="./assets/images/paper.jpg" alt="Paper">
-                        <img id="scissor1" class="player-option" src="./assets/images/scissors.jpg" alt="Scissors">
+                        <img id="rock1" class="player-option" src="./assets/images/rock.jpg" alt="Rock" data-choice="rock">
+                        <img id="paper1" class="player-option" src="./assets/images/paper.jpg" alt="Paper" data-choice = "paper">
+                        <img id="scissor1" class="player-option" src="./assets/images/scissors.jpg" alt="Scissors" data-choice = "scissors">
                     </div>
 
                 </div>
@@ -50,9 +50,9 @@
                     <p>Wins: <span id="player2-win-display"></span> Losses: <span id="player-2-loss-display"></span>
                         Ties: <span id="player-2-ties"></span></p>
                     <div class="d-flex justify-content-center">
-                        <img class="player-option" src="./assets/images/rock.jpg" alt="Rock">
-                        <img class="player-option" src="./assets/images/paper.jpg" alt="Paper">
-                        <img class="player-option" src="./assets/images/scissors.jpg" alt="Scissors">
+                        <img class="player-option" src="./assets/images/rock.jpg" alt="Rock" data-choice="rock">
+                        <img class="player-option" src="./assets/images/paper.jpg" alt="Paper" data-choice = "paper">
+                        <img class="player-option" src="./assets/images/scissors.jpg" alt="Scissors" data-choice = "scissors">
                     </div>
                 </div>
 
@@ -62,8 +62,33 @@
                 <h1>Chat</h1>
             </div>
         </div>
+
+        <div id="start-game" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Welcome to Rock Paper Scissors</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input id="player-name-input" type="text" placeholder="enter player name">
+                        <button id="submit-player-button" class="btn btn-outline-dark" data-dismiss="modal">submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
     <script src="./assets/scripts/rps.js"></script>
 </body>
 
