@@ -11,20 +11,29 @@ database = firebase.database();
 
 //define firebase references
 const playersRef = database.ref('/players/');
-const player1Ref = playersRef.child('player1');
-const player2Ref = playersRef.child('player2');
+const player1Ref = playersRef.child('/player1');
+const player2Ref = playersRef.child('/player2');
 const connectedRef = database.ref('.info/connected'); //firebase's connections reference uses boolean to track connections
 const connectionsRef = database.ref(`/connections/`); //custom list of connections
 const turnsRef = database.ref(`/turns/`); //turns reference to manage click events for choice buttons
 
 //define DOM Selectors
 const playerNameInput = $(`#player-name-input`);
+const statusDisplay = $(`#game-status-display`);
+
+const player1NameDisplay = $(`#player1-name-display`);
+const player1WinDisplay = $(`#player1-win-display`);
+const player1LossDisplay = $(`#player1-loss-display`);
+
+const player2NameDisplay = $(`#player2-name-display`);
+const player2WinDisplay = $(`#player2-win-display`);
+const player2LossDisplay = $(`#player2-loss-display`);
 
 //initialize player objects as null (not assigned yet)
 let player1 = null;
 let player2 = null;
-
-let localPlayerName;
+let activeConnections;
+let turn = null;
 
 
 
@@ -33,7 +42,7 @@ let localPlayerName;
 $(document).ready(function () {
     $('#start-game').modal('show');
 
-    let assignPlayers = function(){
+    let assignPlayers = function () {
         connectedRef.on("value", function (snapshot) {
             if (snapshot.val()) {
                 console.log(`pushing true to connections`)
@@ -41,12 +50,71 @@ $(document).ready(function () {
                 connectionsRef.onDisconnect().remove(); //remove user from connections list
             }
         });
-    
-        connectionsRef.on("value",function(snapshot){
-            console.log(`there are currently ${snapshot.numChildren()} connections`);
+        connectionsRef.on("value", function (snapshot) {
+            activeConnections = snapshot.numChildren();
+            console.log(`active connections: ${activeConnections}`);
+            let playerName = playerNameInput.val().trim();
+
+            if (activeConnections === 1) {
+                //assign player1
+                console.log(`running player1 assign`);
+                player1 = {
+                    name: playerName,
+                    wins: 0,
+                    losses: 0,
+                    currentChoice: ""
+                }
+                console.log(`assigning player1: ${JSON.stringify(player1)}`);
+                player1Ref.set(player1);
+                turn = 2;
+                statusDisplay.text(`Waiting on player 2...`);
+                // player1NameDisplay.html(`${player1.name}`);
+                // player1WinDisplay.html(`${player1.wins}`);
+                // player1LossDisplay.html(`${player1.losses}`);
+                //add event listen to /player1/ to update player1 DOM
+
+            } else if (activeConnections === 2) {
+                //assign player2
+                console.log(`running player2 assign`);
+                player2 = {
+                    name: playerName,
+                    wins: 0,
+                    losses: 0,
+                    currentChoice: ""
+                }
+                player2Ref.set(player2);
+            } else {
+                console.log(`not assigning a player`);
+            }
+
         });
     }
-    
+
+    player1Ref.on("value", function (snapshot) {
+        console.log(`player1 value changed`)
+        console.log(`${JSON.stringify(snapshot.val())}`)
+        player1NameDisplay.html(`${snapshot.val().name}`);
+        player1WinDisplay.html(`${snapshot.val().wins}`);
+        player1LossDisplay.html(`${snapshot.val().losses}`);
+    });
+
+    player2Ref.on("value", function(snapshot){
+        console.log(`player2 value changed`);
+        console.log(`${JSON.stringify(snapshot.val())}`);
+        player2NameDisplay.html(`${snapshot.val().name}`);
+        player2WinDisplay.html(`${snapshot.val().wins}`);
+        player2LossDisplay.html(`${snapshot.val().losses}`);
+    })
+
+    turnsRef.on("value", function (snapshot) {
+        let playerTurn = snapshot.val();
+        console.log(`turn: ${playerTurn}`);
+        if (turn === 1 && (player1 && player2)) {
+            //enable event listeners for player1
+        } else if (turn === 2 && (player1 && player2)) {
+            //enable event listeners for player2
+        }
+    });
 
     //event listener on player submit button to add player to database
     $(`#submit-player-button`).click(function (event) {
@@ -81,11 +149,5 @@ $(document).ready(function () {
         //     console.log(`name blank or all players assigned`);
         // }
     });
-
-    turnsRef.on("value",function(snapshot){
-        let playerTurn = snapshot.val();
-        console.log(`turn: ${playerTurn}`);
-    })
-
 
 });
