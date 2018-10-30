@@ -20,7 +20,8 @@ const turnsRef = database.ref(`/turns/`); //turns reference to manage click even
 //define DOM Selectors
 const playerNameInput = $(`#player-name-input`);
 const statusDisplay = $(`#game-status-display`);
-const rpsOption = $(`.choice`);
+const player1Choice = $(`.player1-choice`);
+const player2Choice = $(`.player2-choice`);
 
 const player1NameDisplay = $(`#player1-name-display`);
 const player1WinDisplay = $(`#player1-win-display`);
@@ -32,7 +33,9 @@ const player2LossDisplay = $(`#player2-loss-display`);
 
 //initialize player objects as null (not assigned yet)
 let player1 = null;
+let p1Selection;
 let player2 = null;
+let p2Selection;
 let activeConnections;
 let turn = null;
 
@@ -40,7 +43,7 @@ let turn = null;
 
 
 //Note: Determine why playerNameInput.val() returns undefined while inside $(document).ready(function{}), with rps.js located at top of index.html
-//      Determine whplayer2 gets same name value as player1
+//      
 $(document).ready(function () {
     $('#start-game').modal('show');
 
@@ -88,7 +91,7 @@ $(document).ready(function () {
             } else {
                 console.log(`not assigning a player`);
             }
-            turnsRef.update(turn);
+            turnsRef.set(turn);
         });
     }
 
@@ -116,35 +119,100 @@ $(document).ready(function () {
 
     });
 
+    // when the value of turn changes in the database, enable each player's listeners
     turnsRef.on("value", function (snapshot) {
-        let playerTurn = snapshot.val().currentTurn;
-        console.log(`turn: ${playerTurn}`);
-        if (playerTurn === 1 && (player1 && player2)) {
+        console.log(`****INSIDE TURN REF****`)
+        console.log(`${JSON.stringify(snapshot)}`);
+        turn = snapshot.val();
+        console.log(`turn: ${turn.currentTurn}`);
+        if (turn.currentTurn === 1 && (player1 && player2)) {
             //enable event listeners for player1
-            console.log(`player1 turn`);
-            rpsOption.click(function() {
-                //let choice = JSON.stringify(event);
+            console.log(`player1 choices enabled`);
+            player1Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
-                player1Ref.update({currentChoice:choice});
-                turnsRef.update({currentTurn:2});
+                updateChoice(choice);
 
             })
-        } else if (playerTurn === 2 && (player1 && player2)) {
+        } else if (turn.currentTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
-            console.log(`player2 turn`);
-            rpsOption.click(function(){
+            console.log(`player2 choices enabled`);
+            player2Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
-                player2Ref.update({currentChoice:choice});
+                updateChoice(choice);
+
             })
         }
     });
 
 
+    // When a value under the players reference changes, check the current choices to decide winner.
+    // Check only on turn 2 to ensure both players choices are entered before checking
     playersRef.on("value", function (snapshot) {
         //add rps logic
-    })
+        console.log(`playersRef values updated`);
+        console.log(JSON.stringify(snapshot.val()));
+        p1Selection = snapshot.val().player1.currentChoice;
+        p2Selection = snapshot.val().player2.currentChoice;
+        console.log(p1Selection);
+        console.log(p2Selection);
+        if (turn.currentTurn === 1 && (player1 && player2)) {
+            console.log(`turn 1, not checking choices`)
+        } else if (turn.currentTurn === 2 && (player1 && player2)) {
+            console.log(`turn 2, compare logic executing`);
+            if(p1Selection === "rock"){
+                if(p2Selection === "scissors"){
+                    //p1 wins
+                    console.log(`player1 wins`);
+                } else if (p2Selection === "paper"){
+                    //p2 wins
+                    console.log(`player2 wins`);
+                } else{
+                    //tie
+                    console.log(`tie`);
+                }
+            } else if (p1Selection === "scissors"){
+                if(p2Selection === "paper"){
+                    //p1 wins
+                    console.log(`player1 wins`);
+                } else if(p2Selection === "rock"){
+                    //p2 wins
+                    console.log(`player2 wins`);
+                } else{
+                    //tie
+                    console.log(`tie`);
+                }
+            } else if(p1Selection === "paper"){
+                if(p2Selection === "rock"){
+                    //p1 wins
+                    console.log(`player1 wins`);
+                } else if (p2Selection === "scissors"){
+                    //p2 wins
+                    console.log(`player2 wins`);
+                } else{
+                    //tie
+                    console.log(`tie`);
+                }
+            }
+        }
+    });
+
+    //take the current turn and choice, update player choices in the database
+    function updateChoice(choice) {
+        if (turn.currentTurn === 1) {
+            player1Ref.update({ currentChoice: choice });
+            turn.currentTurn = 2;
+            turnsRef.set({ currentTurn: turn.currentTurn });
+            player1Choice.off('click');
+        } else if (turn.currentTurn === 2) {
+            player2Ref.update({ currentChoice: choice });
+            turn.currentTurn = 1;
+            turnsRef.set({ currentTurn: turn.currentTurn });
+            player2Choice.off('click');
+        }
+    }
+
 
     //event listener on player submit button to add player to database
     $(`#submit-player-button`).click(function (event) {
