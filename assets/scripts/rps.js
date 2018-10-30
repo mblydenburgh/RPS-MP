@@ -151,16 +151,20 @@ $(document).ready(function () {
     // Check only on turn 2 to ensure both players choices are entered before checking
     playersRef.on("value", function (snapshot) {
         //add rps logic
-        console.log(`playersRef values updated`);
-        console.log(JSON.stringify(snapshot.val()));
+        console.log(`playersRef values updated:`);
+        console.table(JSON.stringify(snapshot.val()));
+
+        //defining variables for player choices, wins and losses for updating
         p1Selection = snapshot.val().player1.currentChoice;
         p2Selection = snapshot.val().player2.currentChoice;
         p1Wins = snapshot.val().player1.wins;
         p1Losses = snapshot.val().player1.losses;
         p2Wins = snapshot.val().player2.wins;
         p2Losses = snapshot.val().player2.losses;
-        console.log(p1Selection);
-        console.log(p2Selection);
+
+        console.log(`p1Selection: ${p1Selection}`);
+        console.log(`p2Selection: ${p2Selection}`);
+
         if (turn.currentTurn === 1 && (player1 && player2)) {
             console.log(`turn 1, not checking choices`)
         } else if (turn.currentTurn === 2 && (player1 && player2)) {
@@ -230,8 +234,8 @@ $(document).ready(function () {
     }
 
 
-    //event listener on player submit button to add player to database
-    $(`#submit-player-button`).click(function (event) {
+    //event listener on player submit button in modal to add player to database and start game
+    $(`#submit-player-button`).click(function () {
         assignPlayers();
     });
 
