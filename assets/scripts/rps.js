@@ -20,6 +20,7 @@ const turnsRef = database.ref(`/turns/`); //turns reference to manage click even
 //define DOM Selectors
 const playerNameInput = $(`#player-name-input`);
 const statusDisplay = $(`#game-status-display`);
+const rpsOption = $(`.choice`);
 
 const player1NameDisplay = $(`#player1-name-display`);
 const player1WinDisplay = $(`#player1-win-display`);
@@ -39,6 +40,7 @@ let turn = null;
 
 
 //Note: Determine why playerNameInput.val() returns undefined while inside $(document).ready(function{}), with rps.js located at top of index.html
+//      Determine whplayer2 gets same name value as player1
 $(document).ready(function () {
     $('#start-game').modal('show');
 
@@ -67,7 +69,7 @@ $(document).ready(function () {
                 console.log(`assigning player1: ${JSON.stringify(player1)}`);
                 player1Ref.set(player1);
                 player1Ref.onDisconnect().remove();
-                turn = 2;
+                turn = { currentTurn: 2 };
                 statusDisplay.text(`Waiting on player 2...`);
 
             } else if (activeConnections === 2) {
@@ -81,71 +83,64 @@ $(document).ready(function () {
                 }
                 player2Ref.set(player2);
                 player2Ref.onDisconnect().remove();
+                statusDisplay.text(`Good luck!`);
+                turn = { currentTurn: 1 };
             } else {
                 console.log(`not assigning a player`);
             }
-
+            turnsRef.update(turn);
         });
     }
 
     player1Ref.on("value", function (snapshot) {
         console.log(`player1 value changed`)
         console.log(`${JSON.stringify(snapshot.val())}`)
-        player1NameDisplay.html(`${snapshot.val().name}`);
-        player1WinDisplay.html(`${snapshot.val().wins}`);
-        player1LossDisplay.html(`${snapshot.val().losses}`);
+        if (snapshot.val()) {
+            player1NameDisplay.html(`${snapshot.val().name}`);
+            player1WinDisplay.html(`${snapshot.val().wins}`);
+            player1LossDisplay.html(`${snapshot.val().losses}`);
+        }
+
+
     });
 
-    player2Ref.on("value", function(snapshot){
+    player2Ref.on("value", function (snapshot) {
         console.log(`player2 value changed`);
         console.log(`${JSON.stringify(snapshot.val())}`);
-        player2NameDisplay.html(`${snapshot.val().name}`);
-        player2WinDisplay.html(`${snapshot.val().wins}`);
-        player2LossDisplay.html(`${snapshot.val().losses}`);
+        if (snapshot.val()) {
+            player2NameDisplay.html(`${snapshot.val().name}`);
+            player2WinDisplay.html(`${snapshot.val().wins}`);
+            player2LossDisplay.html(`${snapshot.val().losses}`);
+        }
+
+
     })
 
     turnsRef.on("value", function (snapshot) {
-        let playerTurn = snapshot.val();
+        let playerTurn = snapshot.val().currentTurn;
         console.log(`turn: ${playerTurn}`);
-        if (turn === 1 && (player1 && player2)) {
+        if (playerTurn === 1 && (player1 && player2)) {
             //enable event listeners for player1
-        } else if (turn === 2 && (player1 && player2)) {
+            console.log(`player1 turn`);
+            rpsOption.click(function() {
+                //let choice = JSON.stringify(event);
+                let choice = this.dataset.choice;
+                console.log(choice);
+            })
+        } else if (playerTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
+            console.log(`player2 turn`);
+
         }
     });
+
+    playersRef.on("value", function (snapshot) {
+        //add rps logic
+    })
 
     //event listener on player submit button to add player to database
     $(`#submit-player-button`).click(function (event) {
         assignPlayers();
-        // //console.log(playerNameInput.val());
-        // //check if name is not blank and if game is waiting for 2 assigned players
-        // if (playerNameInput.val() !== "" && !(player1 && player2)) {
-        //     //check if player1 null, then check player2
-        //     if (player1 === null) {
-        //         player1 = {
-        //             name: playerNameInput.val().trim(),
-        //             wins: 0,
-        //             losses: 0,
-        //             currentChoice: ""
-        //         }
-        //         console.log(`adding player1: ${JSON.stringify(player1)}`);
-        //         database.ref('/players/').child('/player1').set(player1);
-
-        //     } else if (player2 === null) {
-        //         player2 = {
-        //             name: playerNameInput.val().trim(),
-        //             wins: 0,
-        //             losses: 0, currentChoice: ""
-        //         }
-        //         console.log(`adding player2: ${JSON.stringify(player2)}`);
-        //         database.ref('/players/').child('/player2').set(player2);
-
-        //     }
-
-
-        // } else {
-        //     console.log(`name blank or all players assigned`);
-        // }
     });
 
 });
