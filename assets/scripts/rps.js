@@ -114,7 +114,7 @@ $(document).ready(function () {
         }
 
 
-    })
+    });
 
     turnsRef.on("value", function (snapshot) {
         let playerTurn = snapshot.val().currentTurn;
@@ -126,13 +126,21 @@ $(document).ready(function () {
                 //let choice = JSON.stringify(event);
                 let choice = this.dataset.choice;
                 console.log(choice);
+                player1Ref.update({currentChoice:choice});
+                turnsRef.update({currentTurn:2});
+
             })
         } else if (playerTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
             console.log(`player2 turn`);
-
+            rpsOption.click(function(){
+                let choice = this.dataset.choice;
+                console.log(choice);
+                player2Ref.update({currentChoice:choice});
+            })
         }
     });
+
 
     playersRef.on("value", function (snapshot) {
         //add rps logic
