@@ -155,6 +155,10 @@ $(document).ready(function () {
         console.log(JSON.stringify(snapshot.val()));
         p1Selection = snapshot.val().player1.currentChoice;
         p2Selection = snapshot.val().player2.currentChoice;
+        p1Wins = snapshot.val().player1.wins;
+        p1Losses = snapshot.val().player1.losses;
+        p2Wins = snapshot.val().player2.wins;
+        p2Losses = snapshot.val().player2.losses;
         console.log(p1Selection);
         console.log(p2Selection);
         if (turn.currentTurn === 1 && (player1 && player2)) {
@@ -164,10 +168,14 @@ $(document).ready(function () {
             if(p1Selection === "rock"){
                 if(p2Selection === "scissors"){
                     //p1 wins
+                    player1Ref.update({wins:p1Wins+1,currentChoice:""})
+                    player2Ref.update({losses:p2Losses+1,currentChoice:""});
                     console.log(`player1 wins`);
                 } else if (p2Selection === "paper"){
                     //p2 wins
                     console.log(`player2 wins`);
+                    player2Ref.update({wins:p2Wins+1,currentChoice:""});
+                    player1Ref.update({losses:p1Losses+1,currentChoice:""});
                 } else{
                     //tie
                     console.log(`tie`);
@@ -176,9 +184,13 @@ $(document).ready(function () {
                 if(p2Selection === "paper"){
                     //p1 wins
                     console.log(`player1 wins`);
+                    player1Ref.update({wins:p1Wins+1,currentChoice:""})
+                    player2Ref.update({losses:p2Losses+1,currentChoice:""});
                 } else if(p2Selection === "rock"){
                     //p2 wins
                     console.log(`player2 wins`);
+                    player2Ref.update({wins:p2Wins+1,currentChoice:""});
+                    player1Ref.update({losses:p1Losses+1,currentChoice:""});
                 } else{
                     //tie
                     console.log(`tie`);
@@ -187,9 +199,13 @@ $(document).ready(function () {
                 if(p2Selection === "rock"){
                     //p1 wins
                     console.log(`player1 wins`);
+                    player1Ref.update({wins:p1Wins+1,currentChoice:""})
+                    player2Ref.update({losses:p2Losses+1,currentChoice:""});
                 } else if (p2Selection === "scissors"){
                     //p2 wins
                     console.log(`player2 wins`);
+                    player2Ref.update({wins:p2Wins+1,currentChoice:""});
+                    player1Ref.update({losses:p1Losses+1,currentChoice:""});
                 } else{
                     //tie
                     console.log(`tie`);
