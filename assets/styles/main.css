@@ -2,3 +2,8 @@
     width:100px;
     height: 100px;
 }
+
+
+#chat-box{
+    min-height: 200px;
+}

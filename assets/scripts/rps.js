@@ -16,12 +16,17 @@ const player2Ref = playersRef.child('/player2');
 const connectedRef = database.ref('.info/connected'); //firebase's connections reference uses boolean to track connections
 const connectionsRef = database.ref(`/connections/`); //custom list of connections
 const turnsRef = database.ref(`/turns/`); //turns reference to manage click events for choice buttons
+const chatRef = database.ref(`/chat/`);
 
 //define DOM Selectors
+const submitPlayerButton = $(`#submit-player-button`);
 const playerNameInput = $(`#player-name-input`);
 const statusDisplay = $(`#game-status-display`);
 const player1Choice = $(`.player1-choice`);
 const player2Choice = $(`.player2-choice`);
+const chatInput = $(`#chat-input`);
+const submitChat = $(`#submit-chat`);
+const chatBox = $(`#chat-box`);
 
 const player1NameDisplay = $(`#player1-name-display`);
 const player1WinDisplay = $(`#player1-win-display`);
@@ -40,7 +45,8 @@ let activeConnections;
 let turn = null;
 
 
-
+player1Choice.hide();
+player2Choice.hide();
 
 //Note: Determine why playerNameInput.val() returns undefined while inside $(document).ready(function{}), with rps.js located at top of index.html
 //      
@@ -121,14 +127,16 @@ $(document).ready(function () {
     // when the value of turn changes in the database, enable each player's listeners
     turnsRef.on("value", function (snapshot) {
         console.log(`****INSIDE TURN REF****`);
-        console.log(`${JSON.stringify(snapshot)}`);
+        //console.log(`${JSON.stringify(snapshot)}`);
         turn = snapshot.val();
         console.log(`turn: ${turn.currentTurn}`);
         if (turn.currentTurn === 1 && (player1 && player2)) {
             //enable event listeners for player1
             //toggle choices visibility
-            console.log(`player1 choices enabled`);
-            player1Choice.toggleClass('invisible');
+            //console.log(`player1 choices enabled`);
+            console.log(`TOGGLE ON PLAYER1 CHOICES, MAKE VISIBLE`)
+            //player1Choice.toggleClass('invisible');
+            player1Choice.show();
             player1Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
@@ -137,8 +145,10 @@ $(document).ready(function () {
             })
         } else if (turn.currentTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
-            console.log(`player2 choices enabled`);
-            player2Choice.toggleClass('invisible');
+            //console.log(`player2 choices enabled`);
+            console.log(`TOGGLE ON PLAYER2 CHOICES, MAKE VISIBLE`)
+            //player2Choice.toggleClass('invisible');
+            player2Choice.show();
             player2Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
@@ -156,7 +166,7 @@ $(document).ready(function () {
         console.log(`****INSIDE PLAYERS REF****`);
         console.log(`playersRef values updated:`);
         console.table(JSON.stringify(snapshot.val()));
-        
+
         //sync local player variables across browser tabs with database
         player1 = snapshot.val().player1;
         player2 = snapshot.val().player2;
@@ -176,48 +186,48 @@ $(document).ready(function () {
             console.log(`turn 1, not checking choices`)
         } else if (turn.currentTurn === 2 && (player1 && player2)) {
             console.log(`turn 2, compare logic executing`);
-            if(p1Selection === "rock"){
-                if(p2Selection === "scissors"){
+            if (p1Selection === "rock") {
+                if (p2Selection === "scissors") {
                     //p1 wins
-                    player1Ref.update({wins:p1Wins+1,currentChoice:""})
-                    player2Ref.update({losses:p2Losses+1,currentChoice:""});
+                    player1Ref.update({ wins: p1Wins + 1, currentChoice: "" })
+                    player2Ref.update({ losses: p2Losses + 1, currentChoice: "" });
                     console.log(`player1 wins`);
-                } else if (p2Selection === "paper"){
+                } else if (p2Selection === "paper") {
                     //p2 wins
                     console.log(`player2 wins`);
-                    player2Ref.update({wins:p2Wins+1,currentChoice:""});
-                    player1Ref.update({losses:p1Losses+1,currentChoice:""});
-                } else{
+                    player2Ref.update({ wins: p2Wins + 1, currentChoice: "" });
+                    player1Ref.update({ losses: p1Losses + 1, currentChoice: "" });
+                } else {
                     //tie
                     console.log(`tie`);
                 }
-            } else if (p1Selection === "scissors"){
-                if(p2Selection === "paper"){
+            } else if (p1Selection === "scissors") {
+                if (p2Selection === "paper") {
                     //p1 wins
                     console.log(`player1 wins`);
-                    player1Ref.update({wins:p1Wins+1,currentChoice:""})
-                    player2Ref.update({losses:p2Losses+1,currentChoice:""});
-                } else if(p2Selection === "rock"){
+                    player1Ref.update({ wins: p1Wins + 1, currentChoice: "" })
+                    player2Ref.update({ losses: p2Losses + 1, currentChoice: "" });
+                } else if (p2Selection === "rock") {
                     //p2 wins
                     console.log(`player2 wins`);
-                    player2Ref.update({wins:p2Wins+1,currentChoice:""});
-                    player1Ref.update({losses:p1Losses+1,currentChoice:""});
-                } else{
+                    player2Ref.update({ wins: p2Wins + 1, currentChoice: "" });
+                    player1Ref.update({ losses: p1Losses + 1, currentChoice: "" });
+                } else {
                     //tie
                     console.log(`tie`);
                 }
-            } else if(p1Selection === "paper"){
-                if(p2Selection === "rock"){
+            } else if (p1Selection === "paper") {
+                if (p2Selection === "rock") {
                     //p1 wins
                     console.log(`player1 wins`);
-                    player1Ref.update({wins:p1Wins+1,currentChoice:""})
-                    player2Ref.update({losses:p2Losses+1,currentChoice:""});
-                } else if (p2Selection === "scissors"){
+                    player1Ref.update({ wins: p1Wins + 1, currentChoice: "" })
+                    player2Ref.update({ losses: p2Losses + 1, currentChoice: "" });
+                } else if (p2Selection === "scissors") {
                     //p2 wins
                     console.log(`player2 wins`);
-                    player2Ref.update({wins:p2Wins+1,currentChoice:""});
-                    player1Ref.update({losses:p1Losses+1,currentChoice:""});
-                } else{
+                    player2Ref.update({ wins: p2Wins + 1, currentChoice: "" });
+                    player1Ref.update({ losses: p1Losses + 1, currentChoice: "" });
+                } else {
                     //tie
                     console.log(`tie`);
                 }
@@ -225,26 +235,42 @@ $(document).ready(function () {
         }
     });
 
+    chatRef.on("child_added", function (childSnapshot) {
+        console.log(`****IN CHAT REF****`)
+        console.log(childSnapshot.val());
+        chatBox.append(childSnapshot.val().message);
+    });
+    chatRef.onDisconnect().remove();
+
     //take the current turn and choice, update player choices in the database
     function updateChoice(choice) {
         if (turn.currentTurn === 1) {
             player1Ref.update({ currentChoice: choice });
             turn.currentTurn = 2;
             turnsRef.set({ currentTurn: turn.currentTurn });
+            console.log(`TOGGLE PLAYER1 CHOICE OFF, MAKE INVIS`);
             player1Choice.off('click');
-            player1Choice.toggleClass('invisible');
+            //player1Choice.toggleClass('invisible');
+            player1Choice.hide();
         } else if (turn.currentTurn === 2) {
             player2Ref.update({ currentChoice: choice });
             turn.currentTurn = 1;
             turnsRef.set({ currentTurn: turn.currentTurn });
+            console.log(`TOGGLE PLAYER2 CHOICE OFF, MAKE INVIS`);
             player2Choice.off('click');
-            player2Choice.toggleClass('invisible');
+            //player2Choice.toggleClass('invisible');
+            player2Choice.hide();
         }
     }
 
+    submitChat.click(function () {
+        let newMessage = chatInput.val();
+        chatRef.push({ message: newMessage });
+    })
+
 
     //event listener on player submit button in modal to add player to database and start game
-    $(`#submit-player-button`).click(function () {
+    submitPlayerButton.click(function () {
         assignPlayers();
     });
 
