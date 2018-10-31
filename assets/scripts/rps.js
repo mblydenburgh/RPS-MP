@@ -247,19 +247,21 @@ $(document).ready(function () {
     //take the current turn and choice, update player choices in the database
     function updateChoice(choice) {
         if (turn.currentTurn === 1) {
+            player1Choice.off('click');
             player1Ref.update({ currentChoice: choice });
             turn.currentTurn = 2;
             turnsRef.set({ currentTurn: turn.currentTurn });
             console.log(`TOGGLE PLAYER1 CHOICE OFF, MAKE INVIS`);
-            player1Choice.off('click');
+            
             //player1Choice.toggleClass('invisible');
             //player1Choice.hide();
         } else if (turn.currentTurn === 2) {
+            player2Choice.off('click');
             player2Ref.update({ currentChoice: choice });
             turn.currentTurn = 1;
             turnsRef.set({ currentTurn: turn.currentTurn });
             console.log(`TOGGLE PLAYER2 CHOICE OFF, MAKE INVIS`);
-            player2Choice.off('click');
+            
             //player2Choice.toggleClass('invisible');
             //player2Choice.hide();
         }
