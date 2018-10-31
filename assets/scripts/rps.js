@@ -126,7 +126,9 @@ $(document).ready(function () {
         console.log(`turn: ${turn.currentTurn}`);
         if (turn.currentTurn === 1 && (player1 && player2)) {
             //enable event listeners for player1
+            //toggle choices visibility
             console.log(`player1 choices enabled`);
+            player1Choice.toggleClass('invisible');
             player1Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
@@ -136,6 +138,7 @@ $(document).ready(function () {
         } else if (turn.currentTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
             console.log(`player2 choices enabled`);
+            player2Choice.toggleClass('invisible');
             player2Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
@@ -154,11 +157,9 @@ $(document).ready(function () {
         console.log(`playersRef values updated:`);
         console.table(JSON.stringify(snapshot.val()));
         
-        // If player1 null, add from database.
-        if(!player1){
-            console.log(`player1 doesnt exist, assigning`);
-            player1 = snapshot.val().player1;
-        }
+        //sync local player variables across browser tabs with database
+        player1 = snapshot.val().player1;
+        player2 = snapshot.val().player2;
 
         //defining variables for player choices, wins and losses for updating
         p1Selection = snapshot.val().player1.currentChoice;
@@ -231,11 +232,13 @@ $(document).ready(function () {
             turn.currentTurn = 2;
             turnsRef.set({ currentTurn: turn.currentTurn });
             player1Choice.off('click');
+            player1Choice.toggleClass('invisible');
         } else if (turn.currentTurn === 2) {
             player2Ref.update({ currentChoice: choice });
             turn.currentTurn = 1;
             turnsRef.set({ currentTurn: turn.currentTurn });
             player2Choice.off('click');
+            player2Choice.toggleClass('invisible');
         }
     }
 
