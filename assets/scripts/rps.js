@@ -137,6 +137,7 @@ $(document).ready(function () {
             console.log(`TOGGLE ON PLAYER1 CHOICES, MAKE VISIBLE`)
             //player1Choice.toggleClass('invisible');
             player1Choice.show();
+            player2Choice.hide();
             player1Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
@@ -149,6 +150,7 @@ $(document).ready(function () {
             console.log(`TOGGLE ON PLAYER2 CHOICES, MAKE VISIBLE`)
             //player2Choice.toggleClass('invisible');
             player2Choice.show();
+            player1Choice.hide();
             player2Choice.click(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
@@ -251,7 +253,7 @@ $(document).ready(function () {
             console.log(`TOGGLE PLAYER1 CHOICE OFF, MAKE INVIS`);
             player1Choice.off('click');
             //player1Choice.toggleClass('invisible');
-            player1Choice.hide();
+            //player1Choice.hide();
         } else if (turn.currentTurn === 2) {
             player2Ref.update({ currentChoice: choice });
             turn.currentTurn = 1;
@@ -259,7 +261,7 @@ $(document).ready(function () {
             console.log(`TOGGLE PLAYER2 CHOICE OFF, MAKE INVIS`);
             player2Choice.off('click');
             //player2Choice.toggleClass('invisible');
-            player2Choice.hide();
+            //player2Choice.hide();
         }
     }
 
