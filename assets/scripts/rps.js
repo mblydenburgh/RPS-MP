@@ -55,6 +55,7 @@ $(document).ready(function () {
                 connectionsRef.onDisconnect().remove(); //remove user from connections list
             }
         });
+
         connectionsRef.on("value", function (snapshot) {
             activeConnections = snapshot.numChildren();
             console.log(`active connections: ${activeConnections}`);
@@ -115,13 +116,11 @@ $(document).ready(function () {
             player2WinDisplay.html(`${snapshot.val().wins}`);
             player2LossDisplay.html(`${snapshot.val().losses}`);
         }
-
-
     });
 
     // when the value of turn changes in the database, enable each player's listeners
     turnsRef.on("value", function (snapshot) {
-        console.log(`****INSIDE TURN REF****`)
+        console.log(`****INSIDE TURN REF****`);
         console.log(`${JSON.stringify(snapshot)}`);
         turn = snapshot.val();
         console.log(`turn: ${turn.currentTurn}`);
@@ -151,8 +150,15 @@ $(document).ready(function () {
     // Check only on turn 2 to ensure both players choices are entered before checking
     playersRef.on("value", function (snapshot) {
         //add rps logic
+        console.log(`****INSIDE PLAYERS REF****`);
         console.log(`playersRef values updated:`);
         console.table(JSON.stringify(snapshot.val()));
+        
+        // If player1 null, add from database.
+        if(!player1){
+            console.log(`player1 doesnt exist, assigning`);
+            player1 = snapshot.val().player1;
+        }
 
         //defining variables for player choices, wins and losses for updating
         p1Selection = snapshot.val().player1.currentChoice;
