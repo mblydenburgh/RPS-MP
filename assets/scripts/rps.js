@@ -44,6 +44,8 @@ let p2Selection;
 let activeConnections;
 let turn = null;
 let localID;
+let p1FirebaseID;
+let p2FirebaseID;
 
 
 player1Choice.hide();
@@ -140,6 +142,15 @@ $(document).ready(function () {
         console.log(`****INSIDE TURN REF****`);
         //console.log(`${JSON.stringify(snapshot)}`);
         turn = snapshot.val();
+        player1Ref.once('value').then(function(snapshot){
+             p1FirebaseID = snapshot.val().id;
+        });
+        player2Ref.once('value').then(function(snapshot){
+            p2FirebaseID = snapshot.val().id;
+       });
+       console.log(`p1 firebase id: ${p1FirebaseID}`);
+       console.log(`p2 firebase id: ${p2FirebaseID}`);
+
         console.log(`turn: ${turn.currentTurn}`);
         if (turn.currentTurn === 1 && (player1 && player2)) {
             //enable event listeners for player1
@@ -150,14 +161,14 @@ $(document).ready(function () {
             player1Choice.show();
             player2Choice.hide();
             player1Choice.click(function () {
-                if(turn.currentTurn === 2){
+                if(localID !== p1FirebaseID){
                     return
                 };
                 let choice = this.dataset.choice;
                 console.log(choice);
                 updateChoice(choice);
 
-            })
+            });
         } else if (turn.currentTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
             //console.log(`player2 choices enabled`);
@@ -166,7 +177,7 @@ $(document).ready(function () {
             player2Choice.show();
             player1Choice.hide();
             player2Choice.click(function () {
-                if(turn.currentTurn === 1){
+                if(localID !== p2FirebaseID){
                     return
                 }
                 let choice = this.dataset.choice;
