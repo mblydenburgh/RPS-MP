@@ -1,13 +1,44 @@
+body{
+    background: url(../images/background.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.container{
+    background-color: rgba(110, 110, 110, 0.6);
+    margin: 2em auto;
+    padding: 1em;
+    border-radius: 20px;
+    color: white;
+}
+
+.jumbotron{
+    color: black;
+}
+
+#start-game{
+    color: black;
+}
+
+
 .player-option{
     width:100px;
     height: 100px;
+}
+
+.player1-choice, .player2-choice{
+    background-color: rgba(110, 110, 110, 0.6);
 }
 
 
 #chat-box{
     min-height: 200px;
     overflow: scroll;
-    border: 1px solid black;
+    border: 1px solid white;
+    border-radius: 15px;
+    margin-bottom: 10px;
 }
 
 ul{

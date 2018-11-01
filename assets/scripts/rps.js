@@ -57,7 +57,9 @@ player2Choice.hide();
 //Note: Determine why playerNameInput.val() returns undefined while inside $(document).ready(function{}), with rps.js located at top of index.html
 //      
 $(document).ready(function () {
+    chatBox.niceScroll();
     $('#start-game').modal('show');
+    
 
     let assignPlayers = function () {
         connectedRef.on("value", function (snapshot) {
