@@ -22,11 +22,14 @@ const chatRef = database.ref(`/chat/`);
 const submitPlayerButton = $(`#submit-player-button`);
 const playerNameInput = $(`#player-name-input`);
 const statusDisplay = $(`#game-status-display`);
+const player1Div = $(`#player1`);
+const player2Div = $(`#player2`);
 const player1Choice = $(`.player1-choice`);
 const player2Choice = $(`.player2-choice`);
 const chatInput = $(`#chat-input`);
 const submitChat = $(`#submit-chat`);
 const chatBox = $(`#chat-box`);
+const chatUL = $(`#chat-ul`);
 
 const player1NameDisplay = $(`#player1-name-display`);
 const player1WinDisplay = $(`#player1-win-display`);
@@ -142,22 +145,20 @@ $(document).ready(function () {
         console.log(`****INSIDE TURN REF****`);
         //console.log(`${JSON.stringify(snapshot)}`);
         turn = snapshot.val();
+
         player1Ref.once('value').then(function(snapshot){
              p1FirebaseID = snapshot.val().id;
         });
         player2Ref.once('value').then(function(snapshot){
             p2FirebaseID = snapshot.val().id;
        });
-       console.log(`p1 firebase id: ${p1FirebaseID}`);
-       console.log(`p2 firebase id: ${p2FirebaseID}`);
 
         console.log(`turn: ${turn.currentTurn}`);
         if (turn.currentTurn === 1 && (player1 && player2)) {
             //enable event listeners for player1
             //toggle choices visibility
-            //console.log(`player1 choices enabled`);
             console.log(`TOGGLE ON PLAYER1 CHOICES, MAKE VISIBLE`)
-            //player1Choice.toggleClass('invisible');
+            //player1Div.toggleClass('active-player');
             player1Choice.show();
             player2Choice.hide();
             player1Choice.click(function () {
@@ -167,13 +168,13 @@ $(document).ready(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
                 updateChoice(choice);
-
+                //player1Div.toggleClass('active-player');
             });
         } else if (turn.currentTurn === 2 && (player1 && player2)) {
             //enable event listeners for player2
             //console.log(`player2 choices enabled`);
             console.log(`TOGGLE ON PLAYER2 CHOICES, MAKE VISIBLE`)
-            //player2Choice.toggleClass('invisible');
+            //player2Div.toggleClass('active-player');
             player2Choice.show();
             player1Choice.hide();
             player2Choice.click(function () {
@@ -183,7 +184,7 @@ $(document).ready(function () {
                 let choice = this.dataset.choice;
                 console.log(choice);
                 updateChoice(choice);
-
+                //player2Div.toggleClass(`active-player`);
             })
         }
     });
@@ -266,9 +267,10 @@ $(document).ready(function () {
     });
 
     chatRef.on("child_added", function (childSnapshot) {
-        console.log(`****IN CHAT REF****`)
+        console.log(`****IN CHAT REF****`);
         console.log(childSnapshot.val());
-        chatBox.append(childSnapshot.val().message);
+        let newMessage = $(`<li>`).text(childSnapshot.val().message);
+        chatUL.append(newMessage);
     });
     chatRef.onDisconnect().remove();
 
@@ -298,6 +300,7 @@ $(document).ready(function () {
     submitChat.click(function () {
         let newMessage = chatInput.val();
         chatRef.push({ message: newMessage });
+        chatInput.val("");
     })
 
 
