@@ -43,6 +43,7 @@ let player2 = null;
 let p2Selection;
 let activeConnections;
 let turn = null;
+let localID;
 
 
 player1Choice.hide();
@@ -62,46 +63,55 @@ $(document).ready(function () {
             }
         });
 
+        //when a new connection is added, attempt to fill player1 and player2
         connectionsRef.on("value", function (snapshot) {
+            console.log(snapshot.val());
+            
             activeConnections = snapshot.numChildren();
             console.log(`active connections: ${activeConnections}`);
             let playerName = playerNameInput.val().trim();
 
-            if (activeConnections === 1) {
+            if (activeConnections === 1) { //only 1 connection, assign player1
                 //assign player1
                 console.log(`running player1 assign`);
                 player1 = {
                     name: playerName,
                     wins: 0,
                     losses: 0,
-                    currentChoice: ""
+                    currentChoice: "",
+                    id:1
                 }
+                localID = 1;
                 console.log(`assigning player1: ${JSON.stringify(player1)}`);
                 player1Ref.set(player1);
                 player1Ref.onDisconnect().remove();
                 turn = { currentTurn: 2 };
                 statusDisplay.text(`Waiting on player 2...`);
 
-            } else if (activeConnections === 2) {
+            } else if (activeConnections === 2 && (player2 === null)) { //2 connections, assign player2
                 //assign player2
                 console.log(`running player2 assign`);
                 player2 = {
                     name: playerName,
                     wins: 0,
                     losses: 0,
-                    currentChoice: ""
+                    currentChoice: "",
+                    id:2
                 }
+                localID = 2;
                 player2Ref.set(player2);
                 player2Ref.onDisconnect().remove();
                 statusDisplay.text(`Good luck!`);
                 turn = { currentTurn: 1 };
-            } else {
+
+            } else { //more than 2 connections, do not assign
                 console.log(`not assigning a player`);
             }
-            turnsRef.set(turn);
+            turnsRef.set(turn); //set the turn in the database
         });
     }
 
+    //when player stats are updated, update DOM
     player1Ref.on("value", function (snapshot) {
         console.log(`player1 value changed`)
         console.log(`${JSON.stringify(snapshot.val())}`)
@@ -114,6 +124,7 @@ $(document).ready(function () {
 
     });
 
+    //when player stats are updated, update DOM
     player2Ref.on("value", function (snapshot) {
         console.log(`player2 value changed`);
         console.log(`${JSON.stringify(snapshot.val())}`);
@@ -139,6 +150,9 @@ $(document).ready(function () {
             player1Choice.show();
             player2Choice.hide();
             player1Choice.click(function () {
+                if(turn.currentTurn === 2){
+                    return
+                };
                 let choice = this.dataset.choice;
                 console.log(choice);
                 updateChoice(choice);
@@ -152,6 +166,9 @@ $(document).ready(function () {
             player2Choice.show();
             player1Choice.hide();
             player2Choice.click(function () {
+                if(turn.currentTurn === 1){
+                    return
+                }
                 let choice = this.dataset.choice;
                 console.log(choice);
                 updateChoice(choice);
@@ -167,7 +184,7 @@ $(document).ready(function () {
         //add rps logic
         console.log(`****INSIDE PLAYERS REF****`);
         console.log(`playersRef values updated:`);
-        console.table(JSON.stringify(snapshot.val()));
+        console.log(JSON.stringify(snapshot.val()));
 
         //sync local player variables across browser tabs with database
         player1 = snapshot.val().player1;
@@ -191,7 +208,7 @@ $(document).ready(function () {
             if (p1Selection === "rock") {
                 if (p2Selection === "scissors") {
                     //p1 wins
-                    player1Ref.update({ wins: p1Wins + 1, currentChoice: "" })
+                    player1Ref.update({ wins: p1Wins + 1, currentChoice: "" });
                     player2Ref.update({ losses: p2Losses + 1, currentChoice: "" });
                     console.log(`player1 wins`);
                 } else if (p2Selection === "paper") {
