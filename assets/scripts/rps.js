@@ -57,8 +57,10 @@ $(document).ready(function () {
     let assignPlayers = function () {
         connectedRef.on("value", function (snapshot) {
             if (snapshot.val()) {
-                console.log(`pushing true to connections`)
+                console.log(`pushing true to connections`);
                 connectionsRef.push(true); //push user into connections list
+                localID = connectionsRef.push().key;
+                console.log(`local ID: ${localID}`);
                 connectionsRef.onDisconnect().remove(); //remove user from connections list
             }
         });
@@ -79,16 +81,15 @@ $(document).ready(function () {
                     wins: 0,
                     losses: 0,
                     currentChoice: "",
-                    id:1
+                    id:localID
                 }
-                localID = 1;
                 console.log(`assigning player1: ${JSON.stringify(player1)}`);
                 player1Ref.set(player1);
                 player1Ref.onDisconnect().remove();
                 turn = { currentTurn: 2 };
                 statusDisplay.text(`Waiting on player 2...`);
 
-            } else if (activeConnections === 2 && (player2 === null)) { //2 connections, assign player2
+            } else if (activeConnections === 2) { //2 connections, assign player2
                 //assign player2
                 console.log(`running player2 assign`);
                 player2 = {
@@ -96,9 +97,8 @@ $(document).ready(function () {
                     wins: 0,
                     losses: 0,
                     currentChoice: "",
-                    id:2
+                    id:localID
                 }
-                localID = 2;
                 player2Ref.set(player2);
                 player2Ref.onDisconnect().remove();
                 statusDisplay.text(`Good luck!`);
