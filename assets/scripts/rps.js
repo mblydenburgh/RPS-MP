@@ -57,7 +57,10 @@ player2Choice.hide();
 //Note: Determine why playerNameInput.val() returns undefined while inside $(document).ready(function{}), with rps.js located at top of index.html
 //      
 $(document).ready(function () {
-    chatBox.niceScroll();
+    $('.nicescroll-box').niceScroll(".wrap",{
+        cursorcolor: "red",
+        cursorwidth: "16px"
+    });
     $('#start-game').modal('show');
     
 
